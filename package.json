@@ -1,0 +1,13 @@
+{
+    "name": "razor_admin",
+    "private": true,
+    "version": "0.1.0",
+    "scripts": {
+        "client": "cd ./client && npm run dev --port 3000",
+        "admin": "cd ./api/admin && bun run dev --port 3001",
+        "api": "cd ./api/server && bun run dev",
+        "server": "cd ./api/server && concurrently 'bun run dev' 'bun run email-dev' ",
+        "backend": "concurrently 'bun run api' 'bun run admin'",
+        "dev": "concurrently 'bun run server' 'bun run client' 'bun run admin'"
+    }
+}
