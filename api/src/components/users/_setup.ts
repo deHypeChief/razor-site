@@ -9,13 +9,33 @@ export const UserValidator = {
             password: t.String({ minLength: 8 }),
             fullName: t.String(),
             phoneNumber: t.String(),
-            bio: t.String(),
             gender: t.Enum({ male: 'male', female: 'female', other: 'other' }),
             dateOfBirth: t.String({ format: 'date' }),
         }),
         query: t.Object({
-            role: t.Enum({ student: 'student', huttspoter: 'huttspoter', host: 'host' })
+            role: t.Enum({ user: 'user' }, {
+                error: "Invalid role provided. Valid role is: user."
+            })
         }),
+        response: t.Optional(
+            t.Object({
+                success: t.Boolean(),
+                message: t.String(),
+                data: t.Object({
+                    user: t.Object({
+                        sessionClientId: t.String(),
+                        username: t.String(),
+                        phoneNumber: t.String(),
+                        dateOfBirth: t.String({ format: 'date-time' }),
+                        gender: t.Enum({ male: 'male', female: 'female', other: 'other' }),
+                        _id: t.String(),
+                        createdAt: t.String({ format: 'date-time' }),
+                        updatedAt: t.String({ format: 'date-time' }),
+                        __v: t.Number()
+                    })
+                })
+            })
+        ),
         detail: {
             tags: ['User']
         }
@@ -25,13 +45,64 @@ export const UserValidator = {
             email: t.String({ format: 'email' }),
             password: t.String()
         }),
+        response: t.Optional(
+            t.Object({
+                success: t.Boolean(),
+                message: t.String(),
+                data: t.Object({
+                    _id: t.String(),
+                    sessionClientId: t.String(),
+                    username: t.String(),
+                    phoneNumber: t.String(),
+                    dateOfBirth: t.String({ format: 'date-time' }),
+                    gender: t.Enum({ male: 'male', female: 'female', other: 'other' }),
+                    createdAt: t.String({ format: 'date-time' }),
+                    updatedAt: t.String({ format: 'date-time' }),
+                    __v: t.Number()
+                })
+            })
+        ),
         detail: {
             tags: ['User']
         }
     },
-    role: {
+    authStatus: {
+        response: t.Optional(
+            t.Object({
+            success: t.Boolean(),
+            message: t.String(),
+            data: t.Object({
+                isAuthenticated: t.Boolean(),
+                session: t.Object({
+                _id: t.String(),
+                email: t.String({ format: 'email' }),
+                profile: t.String(),
+                fullName: t.String(),
+                role: t.Array(t.String()),
+                sessions: t.Array(t.String()),
+                isSocialAuth: t.Boolean(),
+                isEmailVerified: t.Boolean(),
+                createdAt: t.String({ format: 'date-time' }),
+                updatedAt: t.String({ format: 'date-time' }),
+                __v: t.Number()
+                }),
+                user: t.Object({
+                _id: t.String(),
+                sessionClientId: t.String(),
+                username: t.String(),
+                phoneNumber: t.String(),
+                dateOfBirth: t.String({ format: 'date-time' }),
+                gender: t.Enum({ male: 'male', female: 'female', other: 'other' }),
+                createdAt: t.String({ format: 'date-time' }),
+                updatedAt: t.String({ format: 'date-time' }),
+                __v: t.Number()
+                })
+            })
+            })
+        ),
         detail: {
-            tags: ['User']
+            tags: ['User'],
+            description: "Get user info once the user is signed in"
         }
     }
 }

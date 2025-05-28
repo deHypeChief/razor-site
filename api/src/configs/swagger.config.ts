@@ -2,7 +2,7 @@ const swaggerConfig = {
     path: "/apis",
     documentation: {
         info: {
-            title: 'Huttspot Documentation',
+            title: 'Razor Admin Documentation',
             version: '1.0.1'
         },
         tags: [
@@ -10,10 +10,6 @@ const swaggerConfig = {
             { name: 'User', description: 'Endpoint for user action' },
             { name: 'Admin', description: 'Endpoint for admin action' },
             { name: 'Notifications', description: 'Endpoint for notifications a verifyed auth is required' },
-            { name: 'OTP', description: 'Sending and verifying of OTP tokens for email and 2FA' },
-            { name: 'Transaction', description: 'Geting all transaction data for admin and user' },
-            { name: 'Wallet', description: 'Wallet managemnet' },
-            { name: 'Space', description: 'Create and mange spaces' },
         ]
     }
 }

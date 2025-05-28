@@ -6,11 +6,15 @@ import { IUser, User } from "../components/users/_model";
 import AuthHandler from "../services/authHandler.service";
 import { Admin, IAdmin } from "../components/admin/_model";
 
+/**
+ * Middleware to check session authentication and role.
+ * @param requiredRole - Role required to access the route ("user" | "admin" | null)
+ */
 export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
     (app: Elysia) =>
         app
-            .use(jwtSessionAccess)
-            .use(jwtSessionRefresh)
+            .use(jwtSessionAccess) // Attach access JWT middleware
+            .use(jwtSessionRefresh) // Attach refresh JWT middleware
             .derive(async function handler({
                 request,
                 headers,
@@ -23,6 +27,7 @@ export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
                     const a_t = sessionAccess.value;
                     const r_t = sessionRefresh.value;
 
+                    // If both tokens are missing, clear cookies and throw unauthorized error
                     if (!a_t && !r_t) {
                         sessionAccess.remove();
                         sessionRefresh.remove();
@@ -34,7 +39,7 @@ export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
 
                     let sessionPayload;
 
-                    // Verify Access Token
+                    // Try to verify Access Token first
                     if (a_t) {
                         try {
                             sessionPayload = await sessionAccessJwt.verify(a_t);
@@ -43,19 +48,19 @@ export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
                         }
                     }
 
-                    // Verify Refresh Token if Access Token is invalid or missing
+                    // If Access Token is invalid or missing, try Refresh Token
                     if (!sessionPayload && r_t) {
                         try {
                             sessionPayload = await sessionRefreshJwt.verify(r_t);
 
-                            // Refresh session if refresh token is valid
+                            // If refresh token is valid, refresh the session and generate new tokens
                             if (sessionPayload && sessionPayload.sessionClientId) {
                                 const sessionClient = await SessionClient.findById(sessionPayload.sessionClientId);
                                 if (!sessionClient) {
                                     throw ErrorHandler.UnauthorizedError(set, "Invalid session client");
                                 }
 
-                                // Generate new tokens
+                                // Generate new tokens and set cookies
                                 await AuthHandler.signSession(
                                     set,
                                     sessionClient,
@@ -68,6 +73,7 @@ export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
                                 );
                             }
                         } catch (error) {
+                            // If refresh token is invalid, clear cookies and throw unauthorized error
                             sessionAccess.remove();
                             sessionRefresh.remove();
                             throw ErrorHandler.UnauthorizedError(
@@ -78,15 +84,17 @@ export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
                         }
                     }
 
+                    // If neither token is valid, clear cookies and throw unauthorized error
                     if (!sessionPayload) {
                         sessionAccess.remove();
                         sessionRefresh.remove();
                         throw ErrorHandler.UnauthorizedError(set, "Invalid authentication tokens");
                     }
 
-                    // Validate session and role
+                    // Validate session and check role
                     const session = await validateSession(sessionPayload, set);
 
+                    // If a specific role is required, check if user has it
                     if (requiredRole && !validateRole(session.session.role, requiredRole)) {
                         throw ErrorHandler.UnauthorizedError(
                             set,
@@ -96,21 +104,31 @@ export const isSessionAuth = (requiredRole: "user" | "admin" | null = null) =>
 
                     return session;
                 } catch (error) {
+                    // On any error, clear cookies and rethrow
                     sessionAccess.remove();
                     sessionRefresh.remove();
                     throw error;
                 }
             });
 
+/**
+ * Validates the session payload and fetches the session client (user/admin).
+ * @param payload - Decoded JWT payload
+ * @param set - Response setter
+ */
 async function validateSession(payload: any, set: any) {
     const { role, sessionClientId } = payload;
 
+    // Find session client by ID, exclude password
     const session = await SessionClient.findById(sessionClientId).select("-password");
     if (!session) {
         throw ErrorHandler.UnauthorizedError(set, "Invalid session client");
     }
 
-    const sessionClient: IAdmin | IUser  = role.includes("admin") ? await Admin.findOne({ sessionClientId }).populate("sessionClientId") : await User.findOne({ sessionClientId }).populate("sessionClientId").select("fullname email role")
+    // Fetch the user or admin associated with the session
+    const sessionClient: IAdmin | IUser  = role.includes("admin")
+        ? await Admin.findOne({ sessionClientId }).populate("sessionClientId")
+        : await User.findOne({ sessionClientId }).populate("sessionClientId").select("fullname email role");
     if (!sessionClient) {
         throw ErrorHandler.ValidationError(
             set,
@@ -121,17 +139,23 @@ async function validateSession(payload: any, set: any) {
     return { session, sessionClient };
 }
 
+/**
+ * Checks if the user's roles include the required role.
+ * @param roles - User's roles (string or array)
+ * @param requiredRole - Role required ("user" | "admin")
+ */
 function validateRole(roles: string | string[], requiredRole: "user" | "admin") {
     const roleArray = Array.isArray(roles) ? roles : [roles];
 
     if (requiredRole === "user") {
-        return roleArray.some(role => ["student", "huttspoter", "host"].includes(role));
+        // Accept any of these roles as "user"
+        return roleArray.some(role => ["user"].includes(role));
     }
 
     if (requiredRole === "admin") {
-        return roleArray.includes("admin");
+        // return roleArray.includes("admin");
+        return roleArray.some(role => ["admin"].includes(role));
     }
 
     return false;
 }
-

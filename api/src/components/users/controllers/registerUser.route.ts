@@ -8,8 +8,8 @@ import { UserValidator } from "../_setup";
 const registerUser = new Elysia()
     .post("/register", async ({ set, body, query }) => {
 
-        const validRoles = ["student", "huttspoter", "host"]
-        const { email, password, fullName, phoneNumber, dateOfBirth, username, bio, gender, profile } = body;
+        const validRoles = ["user"]
+        const { email, password, fullName, phoneNumber, dateOfBirth, username, gender, profile } = body;
         const { role } = query
         try {
             if (!role || !validRoles.includes(role)) {
@@ -42,7 +42,6 @@ const registerUser = new Elysia()
                 phoneNumber,
                 dateOfBirth,
                 username,
-                bio,
                 gender
             })
 

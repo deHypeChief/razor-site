@@ -4,6 +4,8 @@ import ErrorHandler from "../../../services/errorHandler.service";
 import SuccessHandler from "../../../services/successHandler.service";
 import { User } from "../../users/_model";
 import { Admin } from "../../admin/_model";
+import { AdminValidator } from "../../admin/_setup";
+import { UserValidator } from "../../users/_setup";
 
 const adminAuthStatus = new Elysia()
     .use(isSessionAuth("admin"))
@@ -20,12 +22,7 @@ const adminAuthStatus = new Elysia()
         } catch (error) {
             throw ErrorHandler.ServerError(set, "Error getting admin status", error);
         }
-    }, {
-        detail: {
-            tags: ['Admin'],
-            description: "Get admin info once the admin has signed in"
-        }
-    })
+    }, AdminValidator.authStatus)
 
 const userAuthStatus = new Elysia()
     .use(isSessionAuth("user"))
@@ -42,11 +39,6 @@ const userAuthStatus = new Elysia()
         } catch (error) {
             throw ErrorHandler.ServerError(set, "Error getting user status", error);
         }
-    }, {
-        detail: {
-            tags: ['User'],
-            description: "Get user info once the user is signed in"
-        }
-    })
+    }, UserValidator.authStatus)
 
 export { adminAuthStatus, userAuthStatus };
