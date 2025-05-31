@@ -1,18 +1,25 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { Toaster } from 'sonner'
 
-import type { QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from '@/components/theme-provider'
 
 interface MyRouterContext {
   queryClient: QueryClient
   auth: { authStatus: () => Promise<{ isAuthenticated: boolean }> }
 }
 
+const queryClient = new QueryClient()
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
-      <Toaster />
-      <Outlet />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <QueryClientProvider client={queryClient}>
+          <Toaster />
+          <Outlet />
+        </QueryClientProvider>
+      </ThemeProvider>
     </>
   ),
 })

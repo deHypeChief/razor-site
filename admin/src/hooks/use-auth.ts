@@ -1,6 +1,6 @@
 
 import { toast } from "sonner";
-import { isAuthenticated, login, register } from "@/api/auth";
+import { isAuthenticated, login, logoutAdmin, register } from "@/api/auth";
 
 export const useAuth = () => {
 
@@ -49,7 +49,21 @@ export const useAuth = () => {
         }
     }
 
-    return { adminLogin, adminRegister, authStatus };
+    async function logout() {
+        try {
+            await logoutAdmin();
+            toast("Admin logged out successfully")
+
+            return true;
+        } catch (error) {
+            toast("Error loging out admni", {
+                description: (error as any).response?.data?.message || (error as any).response?.data || (error as any).message,
+            })
+            console.log(error);
+        }
+    }
+
+    return { adminLogin, adminRegister, authStatus, logout };
 };
 
 export type AuthContext = ReturnType<typeof useAuth>;

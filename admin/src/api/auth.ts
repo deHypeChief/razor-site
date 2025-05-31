@@ -17,3 +17,9 @@ export const isAuthenticated = async () => {
     console.log(response.data)
     return response.data;
 }
+
+export const logoutAdmin = async () => {
+    const response = await api.get('/auth/logout');
+    console.log(response.data)
+    return response.data;
+}

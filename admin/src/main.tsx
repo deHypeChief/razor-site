@@ -8,7 +8,6 @@ import * as TanStackQueryProvider from './utils/integrations/tanstack-query/root
 import { routeTree } from './routeTree.gen'
 
 import './assets/styles/global.css'
-import reportWebVitals from './reportWebVitals.ts'
 import { useAuth } from './hooks/use-auth.ts'
 
 
@@ -57,7 +56,3 @@ if (rootElement && !rootElement.innerHTML) {
   )
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()

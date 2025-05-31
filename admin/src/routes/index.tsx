@@ -1,8 +1,16 @@
-import { GalleryVerticalEnd } from 'lucide-react'
-import { createFileRoute } from '@tanstack/react-router'
+import { Icon } from '@iconify-icon/react';
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { LoginForm } from '@/components/blocks/login.blocks'
 
+
 export const Route = createFileRoute('/')({
+    beforeLoad: async ({ context }) => {
+        // Access auth from a global import or correct context property
+        const authStatus = await context.auth.authStatus()
+        if (authStatus.isAuthenticated) {
+            throw redirect({ to: '/overview' })
+        }
+    },
     component: App,
 })
 
@@ -14,9 +22,9 @@ function App() {
                     <div className="flex justify-center gap-2 md:justify-start">
                         <a href="/" className="flex items-center gap-2 font-medium">
                             <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-md">
-                                <GalleryVerticalEnd className="size-4" />
+                                <Icon icon="eos-icons:admin" width="24" height="24" />
                             </div>
-                            Razor Amdin
+                            Razor Admin
                         </a>
                     </div>
                     <div className="flex flex-1 items-center justify-center">

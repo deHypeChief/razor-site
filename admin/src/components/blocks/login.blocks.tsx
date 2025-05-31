@@ -27,7 +27,7 @@ export function LoginForm({
     const { mutateAsync: signAdminMutation, isPending } = useMutation({
         mutationFn: adminLogin,
         onSuccess: () => {
-            navigate({ to: "/users" })
+            navigate({ to: "/overview" })
         },
     })
 
