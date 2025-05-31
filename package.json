@@ -6,5 +6,8 @@
         "admin": "cd ./admin && bun run dev --port 3001",
         "api": "cd ./api && bun run dev",
         "server": "concurrently 'bun run admin' 'bun run api'"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2"
     }
 }

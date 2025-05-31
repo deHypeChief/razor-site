@@ -1,5 +1,5 @@
 {
-  "projectName": "./admin",
+  "projectName": "admin",
   "mode": "file-router",
   "typescript": true,
   "tailwind": true,

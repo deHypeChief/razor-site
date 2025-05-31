@@ -1,12 +1,12 @@
 import { GalleryVerticalEnd } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
-import { LoginForm } from '@/components/blocks/login.blocks'
+import { RegisterForm } from '@/components/blocks/register.block'
 
-export const Route = createFileRoute('/')({
-    component: App,
+export const Route = createFileRoute('/auth/registerAdmin')({
+    component: RouteComponent,
 })
 
-function App() {
+function RouteComponent() {
     return (
         <>
             <div className="grid min-h-svh lg:grid-cols-2">
@@ -16,12 +16,12 @@ function App() {
                             <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-md">
                                 <GalleryVerticalEnd className="size-4" />
                             </div>
-                            Razor Amdin
+                            Razor Admin
                         </a>
                     </div>
                     <div className="flex flex-1 items-center justify-center">
                         <div className="w-full max-w-sm">
-                            <LoginForm />
+                            <RegisterForm />
                         </div>
                     </div>
                 </div>

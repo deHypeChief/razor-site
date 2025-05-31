@@ -36,11 +36,13 @@ const registerAdmin = new Elysia()
 
             // check adminlist
             const adminList = await Admin.find()
-            const noAdmin = adminList.length <= 0
+            const noAdmin = !adminList.some(
+                admin => admin.adminTitle && admin.adminTitle.toUpperCase() === "SUPER ADMIN"
+            );
 
             const newAdmin = await Admin.create({
                 sessionClientId: newClient._id,
-                adminTitle: noAdmin ? "Super Admin".toUpperCase() : role.toUpperCase(),
+                adminTitle: noAdmin && role === "admin"  ? "Super Admin".toUpperCase() : role.toUpperCase(),
                 permissions: noAdmin ? ["all"] : "read",
                 isSuperAmdin: noAdmin,
             })
